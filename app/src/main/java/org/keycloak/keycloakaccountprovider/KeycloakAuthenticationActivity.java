@@ -7,7 +7,6 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -53,7 +51,7 @@ public class KeycloakAuthenticationActivity extends AccountAuthenticatorActivity
         AccountAuthenticatorResponse response = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
 
         Bundle accountBundle = new Bundle();
-        accountBundle.putString(KeyCloak.ACCOUNT, new Gson().toJson(keyCloakAccount));
+        accountBundle.putString(KeyCloak.ACCOUNT_KEY, new Gson().toJson(keyCloakAccount));
 
         if (response != null) {
             AccountManager.get(this).addAccountExplicitly(new Account(keyCloakAccount.getPreferredUsername(), KeyCloak.ACCOUNT_TYPE), null, accountBundle);
@@ -61,7 +59,7 @@ public class KeycloakAuthenticationActivity extends AccountAuthenticatorActivity
             finish();
         } else {
             AccountManager am = AccountManager.get(this);
-            am.addAccount(KeyCloak.ACCOUNT_TYPE, null, null, accountBundle, null, null, null);
+            am.addAccount(KeyCloak.ACCOUNT_TYPE, KeyCloak.ACCOUNT_AUTHTOKEN_TYPE, null, accountBundle, null, null, null);
             finish();
         }
 
@@ -96,7 +94,7 @@ public class KeycloakAuthenticationActivity extends AccountAuthenticatorActivity
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.keycloak_login_fragment, container, false);
             webView = (WebView) rootView.findViewById(R.id.webview);
             webView.setWebViewClient(new WebViewClient() {

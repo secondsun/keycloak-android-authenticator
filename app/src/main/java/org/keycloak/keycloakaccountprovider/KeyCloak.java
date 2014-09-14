@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import org.keycloak.keycloakaccountprovider.util.IOUtils;
 
-import java.net.URL;
 import java.util.UUID;
 
 /**
@@ -13,8 +12,9 @@ import java.util.UUID;
  */
 public class KeyCloak {
 
-    public static final String ACCOUNT = "org.keycloak.KeyCloakAccount";
+    public static final String ACCOUNT_KEY = "org.keycloak.KeyCloakAccount";
     public static final String ACCOUNT_TYPE = "org.keycloak.Account";
+    public static final String ACCOUNT_AUTHTOKEN_TYPE = "org.keycloak.Account.authToken";
     private final KeyCloakConfig config;
     private final Context context;
 

@@ -9,11 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.JsonWriter;
 
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
+import java.util.Date;
 
 /**
  * Created by Summers on 9/12/2014.
@@ -26,7 +25,7 @@ public class KeyCloakAccountAuthenticator  extends AbstractAccountAuthenticator 
         super(context);
         this.context = context.getApplicationContext();
     }
-    
+
     @Override
     public Bundle editProperties(AccountAuthenticatorResponse accountAuthenticatorResponse, String s) {
         return null;
@@ -36,12 +35,11 @@ public class KeyCloakAccountAuthenticator  extends AbstractAccountAuthenticator 
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         Bundle toReturn = new Bundle();
 
-        if (options == null || options.getString(KeyCloak.ACCOUNT) == null) {
+        if (options == null || options.getString(KeyCloak.ACCOUNT_KEY) == null) {
             toReturn.putParcelable(AccountManager.KEY_INTENT, new Intent(context, KeycloakAuthenticationActivity.class).putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response));
             toReturn.putParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         } else {
-            KeyCloakAccount account = new Gson().fromJson(options.getString(KeyCloak.ACCOUNT), KeyCloakAccount.class);
-            writeAccount(account);
+            KeyCloakAccount account = new Gson().fromJson(options.getString(KeyCloak.ACCOUNT_KEY), KeyCloakAccount.class);
             AccountManager.get(context).addAccountExplicitly(new Account(account.getPreferredUsername(), KeyCloak.ACCOUNT_TYPE), null, options);
             toReturn.putString(AccountManager.KEY_ACCOUNT_NAME, account.getPreferredUsername());
             toReturn.putString(AccountManager.KEY_ACCOUNT_TYPE, KeyCloak.ACCOUNT_TYPE);
@@ -58,8 +56,10 @@ public class KeyCloakAccountAuthenticator  extends AbstractAccountAuthenticator 
 
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String s, Bundle bundle) throws NetworkErrorException {
-        String username = account.name;
-        KeyCloakAccount kcAccount = readAccount(username);
+
+        String keyCloackAccount = AccountManager.get(context).getUserData(account, KeyCloak.ACCOUNT_KEY);
+        KeyCloakAccount kcAccount = new Gson().fromJson(keyCloackAccount, KeyCloakAccount.class);
+
         Bundle toReturn = new Bundle();
         toReturn.putString(AccountManager.KEY_AUTHTOKEN, kcAccount.getAccessToken());
         toReturn.putString(AccountManager.KEY_ACCOUNT_NAME, kcAccount.getPreferredUsername());
@@ -67,17 +67,6 @@ public class KeyCloakAccountAuthenticator  extends AbstractAccountAuthenticator 
         return toReturn;
     }
 
-    private KeyCloakAccount readAccount(String username) {
-        SharedPreferences prefs = context.getSharedPreferences("KeyCloak", Context.MODE_PRIVATE);
-        String jsonAccount = prefs.getString(username, null);
-
-        if (jsonAccount == null) {
-            return null;
-        }
-
-        return new Gson().fromJson(jsonAccount, KeyCloakAccount.class);
-
-    }
 
     @Override
     public String getAuthTokenLabel(String s) {
@@ -86,7 +75,19 @@ public class KeyCloakAccountAuthenticator  extends AbstractAccountAuthenticator 
 
     @Override
     public Bundle updateCredentials(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String s, Bundle bundle) throws NetworkErrorException {
-        return null;
+
+        String keyCloackAccount = AccountManager.get(context).getUserData(account, KeyCloak.ACCOUNT_KEY);
+        KeyCloakAccount kca = new Gson().fromJson(keyCloackAccount, KeyCloakAccount.class);
+
+        if (kca.getExpiresOn() > new Date().getTime()) {
+            throw new RuntimeException("token expired");
+        }
+
+        Bundle toReturn = new Bundle();
+        toReturn.putString(AccountManager.KEY_ACCOUNT_NAME, kca.getPreferredUsername());
+        toReturn.putString(AccountManager.KEY_ACCOUNT_TYPE, KeyCloak.ACCOUNT_TYPE);
+
+        return toReturn;
     }
 
     @Override
@@ -94,9 +95,5 @@ public class KeyCloakAccountAuthenticator  extends AbstractAccountAuthenticator 
         return null;
     }
 
-    private void writeAccount(KeyCloakAccount account) {
-        SharedPreferences prefs = context.getSharedPreferences("KeyCloak", Context.MODE_PRIVATE);
-        prefs.edit().putString(account.getPreferredUsername(), new Gson().toJson(account)).commit();
-    }
 
 }
