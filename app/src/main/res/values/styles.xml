@@ -1,0 +1,18 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Text" parent="AppTheme">
+        <item name="android:textColor">#FFF</item>
+        <item name="android:layout_marginBottom">15dp</item>
+    </style>
+
+    <style name="HeaderText" parent="Text">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+</resources>
