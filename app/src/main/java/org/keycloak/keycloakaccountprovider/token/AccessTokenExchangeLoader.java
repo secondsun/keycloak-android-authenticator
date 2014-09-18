@@ -59,7 +59,7 @@ public class AccessTokenExchangeLoader extends AsyncTaskLoader<KeyCloakAccount> 
             URL accessTokenEndpoint = new URL(kc.getBaseURL() + "/tokens/access/codes");
 
             if (kc.getClientSecret() == null) {
-                accessTokenEndpoint = new URL(kc.getBaseURL() + "/tokens/access/codes&client_id" + IOUtils.encodeURIComponent(kc.getClientId()));
+                accessTokenEndpoint = new URL(kc.getBaseURL() + "/tokens/access/codes&client_id=" + IOUtils.encodeURIComponent(kc.getClientId()));
             }
 
             final StringBuilder bodyBuilder = new StringBuilder();

@@ -21,6 +21,8 @@ import com.google.gson.Gson;
 import org.keycloak.keycloakaccountprovider.token.AccessTokenExchangeLoader;
 import org.keycloak.keycloakaccountprovider.util.IOUtils;
 
+import java.security.Key;
+
 
 public class KeycloakAuthenticationActivity extends AccountAuthenticatorActivity implements LoaderManager.LoaderCallbacks<KeyCloakAccount> {
 
@@ -49,12 +51,18 @@ public class KeycloakAuthenticationActivity extends AccountAuthenticatorActivity
     @Override
     public void onLoadFinished(Loader<KeyCloakAccount> keyCloakAccountLoader, KeyCloakAccount keyCloakAccount) {
         AccountAuthenticatorResponse response = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
-
+        String keyCloakAccountJson = new Gson().toJson(keyCloakAccount);
         Bundle accountBundle = new Bundle();
-        accountBundle.putString(KeyCloak.ACCOUNT_KEY, new Gson().toJson(keyCloakAccount));
+        accountBundle.putString(KeyCloak.ACCOUNT_KEY, keyCloakAccountJson);
 
         if (response != null) {
-            AccountManager.get(this).addAccountExplicitly(new Account(keyCloakAccount.getPreferredUsername(), KeyCloak.ACCOUNT_TYPE), null, accountBundle);
+            AccountManager am = AccountManager.get(this);
+            Account androidAccount = new Account(keyCloakAccount.getPreferredUsername(), KeyCloak.ACCOUNT_TYPE);
+            if (am.getUserData(androidAccount, KeyCloak.ACCOUNT_KEY) != null){
+                am.setUserData(androidAccount, KeyCloak.ACCOUNT_KEY, keyCloakAccountJson);
+            } else {
+                am.addAccountExplicitly(androidAccount, null, accountBundle);
+            }
             response.onResult(accountBundle);
             finish();
         } else {
