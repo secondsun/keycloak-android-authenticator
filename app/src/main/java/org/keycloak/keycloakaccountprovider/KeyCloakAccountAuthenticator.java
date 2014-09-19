@@ -17,6 +17,7 @@ import org.jboss.aerogear.android.http.HttpException;
 import org.jboss.aerogear.android.impl.http.HttpRestProvider;
 import org.json.JSONObject;
 import org.keycloak.keycloakaccountprovider.util.IOUtils;
+import org.keycloak.keycloakaccountprovider.util.TokenExchangeUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -32,10 +33,13 @@ import java.util.Map;
 public class KeyCloakAccountAuthenticator  extends AbstractAccountAuthenticator {
 
     private final Context context;
-
+    private final AccountManager am;
+    private final KeyCloak kc;
     public KeyCloakAccountAuthenticator(Context context) {
         super(context);
         this.context = context.getApplicationContext();
+        this.am = AccountManager.get(context);
+        this.kc = new KeyCloak(context);
     }
 
     @Override
@@ -69,13 +73,13 @@ public class KeyCloakAccountAuthenticator  extends AbstractAccountAuthenticator 
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String s, Bundle bundle) throws NetworkErrorException {
 
-        AccountManager am = AccountManager.get(context);
+
         String keyCloackAccount = am.getUserData(account, KeyCloak.ACCOUNT_KEY);
         KeyCloakAccount kcAccount = new Gson().fromJson(keyCloackAccount, KeyCloakAccount.class);
 
         if (new Date(kcAccount.getExpiresOn()).before(new Date())) {
             try {
-                refreshToken(kcAccount);
+                TokenExchangeUtils.refreshToken(kcAccount, kc);
                 String accountJson = new Gson().toJson(kcAccount);
                 am.setUserData(new Account(kcAccount.getPreferredUsername(), KeyCloak.ACCOUNT_TYPE), KeyCloak.ACCOUNT_KEY, accountJson);
             } catch (HttpException e) {
@@ -123,58 +127,6 @@ public class KeyCloakAccountAuthenticator  extends AbstractAccountAuthenticator 
         return null;
     }
 
-    private KeyCloakAccount refreshToken(KeyCloakAccount account) throws NetworkErrorException {
 
-        KeyCloak kc = new KeyCloak(context);
-
-        final Map<String, String> data = new HashMap<String, String>();
-        data.put("refresh_token", account.getRefreshToken());
-        data.put("grant_type", "refresh_token");
-
-
-        try {
-            URL accessTokenEndpoint = new URL(kc.getBaseURL() + "/tokens/refresh");
-
-            if (kc.getClientSecret() == null) {
-                accessTokenEndpoint = new URL(kc.getBaseURL() + "/tokens/refresh&client_id=" + IOUtils.encodeURIComponent(kc.getClientId()));
-            }
-
-            final StringBuilder bodyBuilder = new StringBuilder();
-            final String formTemplate = "%s=%s";
-
-            String amp = "";
-            for (Map.Entry<String, String> entry : data.entrySet()) {
-                bodyBuilder.append(amp);
-                try {
-                    bodyBuilder.append(String.format(formTemplate, entry.getKey(), URLEncoder.encode(entry.getValue(), "UTF-8")));
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
-                amp = "&";
-            }
-
-            HttpRestProvider provider = new HttpRestProvider(accessTokenEndpoint);
-            provider.setDefaultHeader("Content-Type", "application/x-www-form-urlencoded");
-
-            if (kc.getClientSecret() != null) {
-                provider.setDefaultHeader("Authorization", "Basic " + Base64.encodeToString((kc.getClientId() + ":" + kc.getClientSecret()).getBytes("UTF-8"), Base64.DEFAULT | Base64.NO_WRAP));
-            }
-
-            HeaderAndBody result = provider.post(bodyBuilder.toString());
-
-            byte[] bodyData = result.getBody();
-            String body = new String(bodyData);
-            JSONObject accessResponse = new JSONObject(body);
-            account.extractTokenProperties(accessResponse);
-
-            return account;
-        } catch (HttpException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new NetworkErrorException(e);
-        }
-
-
-    }
 
 }
