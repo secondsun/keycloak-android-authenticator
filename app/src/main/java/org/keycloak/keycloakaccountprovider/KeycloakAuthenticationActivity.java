@@ -55,21 +55,27 @@ public class KeycloakAuthenticationActivity extends AccountAuthenticatorActivity
         Bundle accountBundle = new Bundle();
         accountBundle.putString(KeyCloak.ACCOUNT_KEY, keyCloakAccountJson);
 
-        if (response != null) {
-            AccountManager am = AccountManager.get(this);
-            Account androidAccount = new Account(keyCloakAccount.getPreferredUsername(), KeyCloak.ACCOUNT_TYPE);
-            if (am.getUserData(androidAccount, KeyCloak.ACCOUNT_KEY) != null){
+
+        AccountManager am = AccountManager.get(this);
+        Account androidAccount = new Account(keyCloakAccount.getPreferredUsername(), KeyCloak.ACCOUNT_TYPE);
+        Account[] accounts = am.getAccountsByType(KeyCloak.ACCOUNT_TYPE);
+        for (Account existingAccount : accounts) {
+            if (existingAccount.name == androidAccount.name) {
                 am.setUserData(androidAccount, KeyCloak.ACCOUNT_KEY, keyCloakAccountJson);
-            } else {
-                am.addAccountExplicitly(androidAccount, null, accountBundle);
+                if (response != null) {
+                    response.onResult(accountBundle);
+                }
+                finish();
             }
-            response.onResult(accountBundle);
-            finish();
-        } else {
-            AccountManager am = AccountManager.get(this);
-            am.addAccount(KeyCloak.ACCOUNT_TYPE, KeyCloak.ACCOUNT_AUTHTOKEN_TYPE, null, accountBundle, null, null, null);
-            finish();
         }
+
+        am.removeAccount(androidAccount, null, null);
+        am.addAccountExplicitly(androidAccount, null, accountBundle);
+
+        if (response != null) {
+            response.onResult(accountBundle);
+        }
+        finish();
 
 
     }
@@ -115,7 +121,7 @@ public class KeycloakAuthenticationActivity extends AccountAuthenticatorActivity
 
                         Bundle data = new Bundle();
                         data.putString(ACCESS_TOKEN_KEY, token);
-                        getLoaderManager().initLoader(1,data, (LoaderManager.LoaderCallbacks)(getActivity())).forceLoad();
+                        getLoaderManager().initLoader(1, data, (LoaderManager.LoaderCallbacks) (getActivity())).forceLoad();
 
                         return true;
                     }
