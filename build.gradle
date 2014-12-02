@@ -7,7 +7,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0-rc1'
-        classpath (group:'nl.javadude.gradle.plugins', name:'license-gradle-plugin', version:'0.11.1', changing:true) {
+        classpath (group:'nl.javadude.gradle.plugins', name:'license-gradle-plugin', version:'0.11.1-SNAPSHOT', changing:true) {
             exclude group: 'com.google.guava'
         }
         // NOTE: Do not place your application dependencies here; they belong
