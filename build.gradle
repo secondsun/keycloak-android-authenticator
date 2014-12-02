@@ -3,14 +3,18 @@
 buildscript {
     repositories {
         jcenter()
+        mavenLocal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0-rc1'
-
+        classpath (group:'nl.javadude.gradle.plugins', name:'license-gradle-plugin', version:'0.11.1', changing:true) {
+            exclude group: 'com.google.guava'
+        }
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
+
 
 allprojects {
     repositories {
@@ -18,3 +22,4 @@ allprojects {
         mavenLocal()
     }
 }
+

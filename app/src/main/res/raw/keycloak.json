@@ -1,10 +1,26 @@
+/**
+ * JBoss,HomeofProfessionalOpenSource
+ * Copyright Red Hat, Inc., and individual contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 {
-  "realm": "sup",
-  "realm-public-key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDLMhMGrOhZgX/FcVPIYRSk8pkYh7CE6ZHdULpveE4HCHMSVlJ8MugI/uSVwTOWPCqc8XAqHcAY6wtCiKRcKDQOcvUfaeIPzcR6xg8GuJzhfO2kMO2Vv+HgXIdfh+z+qBip3UolNrjimob8sobtqGllLi721y7ZKu+9KIQGjjFkXQIDAQAB",
+  "realm": "ballme",
+  "realm-public-key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCKdUfxPh1KW4E6fUEEXMCPunmif6hIBeUKX/sLUuCzgFs4DbJGoQ5vDlwFpewBV3D/6eqQPlZq1jDm6C7juaTReFWh86qt96SaB0JKhBEmECmZgjUkGziq5NrfgTEu7LzmdQI+mCI5v9/VowtPwPXvQHludTDw7YEjz/9GkN0YwQIDAQAB",
   "auth-server-url": "https://auth-coffeeregister.rhcloud.com/auth",
-  "ssl-required": "external",
-  "resource": "Android",
+  "ssl-required": "all",
+  "resource": "android",
   "credentials": {
-    "secret": "47abb5a6-7069-4b70-b9fb-d5ad6db207fd"
+    "secret": "eec0c610-46dc-44b0-9748-afae579fec45"
   }
 }
