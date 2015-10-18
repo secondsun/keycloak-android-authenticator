@@ -8,23 +8,13 @@ import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Base64;
 
 import com.google.gson.Gson;
 
-import org.jboss.aerogear.android.http.HeaderAndBody;
-import org.jboss.aerogear.android.http.HttpException;
-import org.jboss.aerogear.android.impl.http.HttpRestProvider;
-import org.json.JSONObject;
-import org.keycloak.keycloakaccountprovider.util.IOUtils;
+import org.jboss.aerogear.android.pipe.http.HttpException;
 import org.keycloak.keycloakaccountprovider.util.TokenExchangeUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
