@@ -1,7 +1,10 @@
 {
-  "realm": "demo",
-  "auth-server-url": "http://10.0.2.2:8080/auth",
+  "realm": "authz_demo",
+  "auth-server-url": "http://172.17.0.2:8080/auth",
   "ssl-required": "external",
-  "resource": "android",
-  "public-client": true
+  "resource": "server",
+  "credentials": {
+    "secret": "2bd2c1c4-2143-49dc-9585-4f424aee9b35"
+  },
+  "use-resource-role-mappings": true
 }
