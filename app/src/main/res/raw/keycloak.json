@@ -1,10 +1,7 @@
 {
-  "realm": "sup",
-  "realm-public-key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDLMhMGrOhZgX/FcVPIYRSk8pkYh7CE6ZHdULpveE4HCHMSVlJ8MugI/uSVwTOWPCqc8XAqHcAY6wtCiKRcKDQOcvUfaeIPzcR6xg8GuJzhfO2kMO2Vv+HgXIdfh+z+qBip3UolNrjimob8sobtqGllLi721y7ZKu+9KIQGjjFkXQIDAQAB",
-  "auth-server-url": "https://auth-coffeeregister.rhcloud.com/auth",
+  "realm": "demo",
+  "auth-server-url": "http://10.0.2.2:8080/auth",
   "ssl-required": "external",
-  "resource": "Android",
-  "credentials": {
-    "secret": "47abb5a6-7069-4b70-b9fb-d5ad6db207fd"
-  }
+  "resource": "android",
+  "public-client": true
 }

@@ -96,7 +96,7 @@ public class KeyCloakAccount {
         sessionState = token.optString("session-state");
 
         try {
-            extractIdProperties(new JSONObject(new String(Base64.decode(idToken.split("\\.")[1].getBytes(), Base64.DEFAULT))));
+            extractIdProperties(new JSONObject(new String(Base64.decode(accessToken.split("\\.")[1].getBytes(), Base64.DEFAULT))));
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

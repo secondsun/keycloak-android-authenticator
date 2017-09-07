@@ -4,9 +4,12 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,12 +55,12 @@ public class KeycloakAuthenticationActivity extends AccountAuthenticatorActivity
     public void onLoadFinished(Loader<KeyCloakAccount> keyCloakAccountLoader, KeyCloakAccount keyCloakAccount) {
         AccountAuthenticatorResponse response = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         String keyCloakAccountJson = new Gson().toJson(keyCloakAccount);
-        Bundle accountBundle = new Bundle();
+        final Bundle accountBundle = new Bundle();
         accountBundle.putString(KeyCloak.ACCOUNT_KEY, keyCloakAccountJson);
 
 
-        AccountManager am = AccountManager.get(this);
-        Account androidAccount = new Account(keyCloakAccount.getPreferredUsername(), KeyCloak.ACCOUNT_TYPE);
+        final AccountManager am = AccountManager.get(this);
+        final Account androidAccount = new Account(keyCloakAccount.getPreferredUsername(), KeyCloak.ACCOUNT_TYPE);
         Account[] accounts = am.getAccountsByType(KeyCloak.ACCOUNT_TYPE);
         for (Account existingAccount : accounts) {
             if (existingAccount.name == androidAccount.name) {
@@ -69,8 +72,14 @@ public class KeycloakAuthenticationActivity extends AccountAuthenticatorActivity
             }
         }
 
-        am.removeAccount(androidAccount, null, null);
-        am.addAccountExplicitly(androidAccount, null, accountBundle);
+        am.removeAccount(androidAccount, new AccountManagerCallback<Boolean>() {
+            @Override
+            public void run(AccountManagerFuture<Boolean> accountManagerFuture) {
+                boolean result = am.addAccountExplicitly(androidAccount, null, accountBundle);
+
+            }
+        }, null);
+
 
         if (response != null) {
             response.onResult(accountBundle);
@@ -99,7 +108,7 @@ public class KeycloakAuthenticationActivity extends AccountAuthenticatorActivity
         }
 
         @Override
-        public void onAttach(Activity activity) {
+        public void onAttach(Context activity) {
             super.onAttach(activity);
             if (kc == null) {
                 kc = new KeyCloak(activity);

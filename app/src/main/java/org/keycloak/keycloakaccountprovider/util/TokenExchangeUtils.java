@@ -38,10 +38,10 @@ public final class TokenExchangeUtils {
         }
 
         try {
-            URL accessTokenEndpoint = new URL(kc.getBaseURL() + "/tokens/access/codes");
+            URL accessTokenEndpoint = new URL(kc.getBaseURL() + "/protocol/openid-connect/token");
 
             if (kc.getClientSecret() == null) {
-                accessTokenEndpoint = new URL(kc.getBaseURL() + "/tokens/access/codes&client_id=" + IOUtils.encodeURIComponent(kc.getClientId()));
+                accessTokenEndpoint = new URL(kc.getBaseURL() + "/protocol/openid-connect/token&client_id=" + IOUtils.encodeURIComponent(kc.getClientId()));
             }
 
             String bodyString = getBody(data);
@@ -69,10 +69,10 @@ public final class TokenExchangeUtils {
 
 
         try {
-            URL refreshTokenEndpoint = new URL(kc.getBaseURL() + "/tokens/refresh");
+            URL refreshTokenEndpoint = new URL(kc.getBaseURL() + "/protocol/openid-connect/token/refresh");
 
             if (kc.getClientSecret() == null) {
-                refreshTokenEndpoint = new URL(kc.getBaseURL() + "/tokens/refresh&client_id=" + IOUtils.encodeURIComponent(kc.getClientId()));
+                refreshTokenEndpoint = new URL(kc.getBaseURL() + "/protocol/openid-connect/token/refresh&client_id=" + IOUtils.encodeURIComponent(kc.getClientId()));
             }
 
             String bodyString = getBody(data);

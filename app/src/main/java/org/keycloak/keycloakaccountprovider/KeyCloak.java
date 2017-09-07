@@ -30,7 +30,7 @@ public class KeyCloak {
         saveState(state);
 
         String url = config.realmUrl
-                + "/tokens/login"
+                + "/protocol/openid-connect/auth"
                 + "?client_id=" + IOUtils.encodeURIComponent(config.clientId)
                 + "&redirect_uri=" + IOUtils.encodeURIComponent(redirectUri)
                 + "&state=" + IOUtils.encodeURIComponent(state)
